@@ -1,0 +1,4 @@
+[submodule "web-app"]
+	path = web-app
+	url = https://github.com/SheVyY/abo-converter-web-app.git
+	branch = main
