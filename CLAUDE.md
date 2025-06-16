@@ -23,15 +23,22 @@ ABO Converter Suite - Comprehensive tools for converting bank statements between
 abo_converter/
 ├── abo_converter.py           # Main entry point
 ├── src/                       # Core source code
-│   ├── main.py               # Orchestrator
+│   ├── main.py               # Orchestrator (uses direct imports)
 │   ├── csv_to_abo_raiffeisen.py # Raiffeisenbank converter
-│   └── abo_validator.py      # Multi-bank validator
+│   ├── csv_to_abo_fio.py    # FIO Bank converter
+│   ├── abo_validator.py      # Multi-bank validator
+│   └── utils/                # Shared utilities
+│       ├── __init__.py
+│       └── banking_utils.py  # Modulo 11, character conversion
 ├── legacy/                   # Backward compatibility
 │   ├── gpc_to_csv.py        # Original GPC→CSV
 │   └── csv_to_gpc.py        # Original CSV→GPC
 ├── examples/                 # Test data and samples
-└── docs/                     # Documentation and specs
-```
+├── docs/                     # Documentation and specs
+├── tests/                    # Unit and integration tests
+├── web-app/                  # React web interface
+├── google_apps_script/       # Google Sheets integration
+└── .github/                  # GitHub workflows and templates
 
 ### Key Components
 
@@ -44,14 +51,37 @@ abo_converter/
   - Czech character normalization for ASCII compliance
   - Account number validation using Modulo 11
 
-#### 2. ABO Validator (`abo_validator.py`)
+#### 2. CSV to ABO Converter (`csv_to_abo_fio.py`)
+- **Purpose**: Convert CSV payment data to FIO Bank ABO format
+- **Key Features**:
+  - FIO-specific UHL1 header (spaces instead of client name)
+  - 12-digit zero-padded amounts
+  - Account formatting without bank codes in payment lines
+  - Shared utilities for validation and conversion
+
+#### 3. ABO Validator (`abo_validator.py`)
 - **Purpose**: Validate ABO files from various Czech banks
 - **Supports**: Raiffeisenbank (5500), FIO Bank (2010), others
-- **Validates**: File structure, headers, groups, payment items, terminators
+- **Features**: 
+  - Comprehensive validation with detailed error messages
+  - File structure analysis with line-by-line reporting
+  - Summary statistics (groups, payments)
 
-#### 3. Main Orchestrator (`main.py`)
+#### 4. Main Orchestrator (`main.py`)
 - **Purpose**: Unified interface for all conversion operations
-- **Features**: Command-line interface, file path resolution, error handling
+- **Features**: 
+  - Direct imports (no os.system() calls - security improvement)
+  - Command-line interface with argument parsing
+  - File path resolution and error handling
+
+#### 5. Shared Utilities (`utils/banking_utils.py`)
+- **Purpose**: Common banking functions to avoid code duplication
+- **Functions**:
+  - `validate_account_modulo11()`: Czech account validation
+  - `convert_czech_to_ascii()`: Character normalization
+  - `format_account_number()`: Consistent formatting
+  - `format_amount_to_cents()`: Decimal to cents conversion
+  - `format_symbol()`: VS/SS formatting
 
 ## Technical Implementation
 
@@ -139,11 +169,34 @@ vlastní účet,účet protistrany,částka,VS,KS,SS,název účtu prostistrany,
 - Modular design for easy extension
 - Extensive error handling and validation
 
+## Recent Improvements (2025)
+
+### Security Enhancements
+- **Eliminated os.system() vulnerability**: Replaced shell command execution with direct Python imports
+- **No command injection risk**: All converters now use proper function calls
+
+### Code Quality
+- **Eliminated 200+ lines of duplicate code**: Extracted shared functions to `utils/banking_utils.py`
+- **Fixed broken validator**: Now provides detailed structure analysis and proper error reporting
+- **Cleaned up project structure**: Removed redundant files and misplaced components
+
+### Repository Setup
+- **GitHub Actions CI/CD**: Automated testing across Python 3.8-3.11
+- **Dependabot integration**: Automated dependency updates
+- **Issue/PR templates**: Standardized contribution workflow
+- **Security policy**: Clear vulnerability reporting process
+
 ## Maintenance
 - **Code reviews**: Ensure banking compliance
 - **Format updates**: Track changes in bank specifications
 - **Security**: No sensitive data logging or storage
 - **Performance**: Optimize for large payment batches
+
+## GitHub Repository
+- **Repository**: https://github.com/SheVyY/abo-converter (private)
+- **CI/CD**: GitHub Actions for automated testing
+- **Dependencies**: Managed by Dependabot
+- **Contributions**: Via pull requests with templates
 
 ---
 

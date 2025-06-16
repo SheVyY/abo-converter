@@ -4,6 +4,10 @@ Kompletní sada nástrojů pro převod bankovních výpisů mezi různými form�
 
 A comprehensive suite of tools for converting bank statements between various formats used by Czech banks.
 
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 ## Přehled / Overview
 
 Tato sada obsahuje nástroje pro:
@@ -56,7 +60,9 @@ abo_converter/
 │   ├── main.py               # Orchestrační skript / Orchestrator
 │   ├── csv_to_abo_raiffeisen.py # CSV→ABO převodník pro Raiffeisenbank
 │   ├── csv_to_abo_fio.py     # CSV→ABO převodník pro FIO Bank
-│   └── abo_validator.py      # ABO validátor / ABO validator
+│   ├── abo_validator.py      # ABO validátor / ABO validator
+│   └── utils/                # Sdílené utility / Shared utilities
+│       └── banking_utils.py  # Modulo 11, konverze znaků / Character conversion
 ├── google_apps_script/        # Google Sheets integrace / Google Sheets integration
 │   ├── Code.gs               # Apps Script kód / Apps Script code
 │   ├── README.md             # Dokumentace / Documentation
@@ -83,9 +89,14 @@ abo_converter/
 │   ├── integration/          # Integrační testy
 │   ├── fixtures/             # Testovací data
 │   └── test_runner.py        # Spouštěč testů
+├── web-app/                   # React webové rozhraní / React web interface
+├── .github/                   # GitHub workflows a šablony / GitHub workflows
+│   ├── workflows/            # CI/CD pipeline
+│   ├── ISSUE_TEMPLATE/       # Šablony issues / Issue templates
+│   └── SECURITY.md           # Bezpečnostní politika / Security policy
 ├── CLAUDE.md                  # Projektová paměť / Project memory
+├── pyproject.toml            # Python konfigurace / Python configuration
 ├── .gitignore                 # Git ignorované soubory
-├── pytest.ini                # Konfigurace testů
 └── README.md                  # Tato dokumentace / This documentation
 ```
 
@@ -230,12 +241,19 @@ UHL1                    # Hlavička souboru (58 znaků)
 
 ## Vývoj / Development
 
+### Bezpečnost / Security
+
+Projekt používá přímé importy funkcí místo volání shell příkazů pro lepší bezpečnost.
+
+The project uses direct function imports instead of shell command execution for better security.
+
 ### Přidání podpory nové banky
 
 1. Analyzujte formát ABO souboru dané banky
-2. Vytvořte nový převodník podle vzoru `csv2abo_raiffeisen.py`
-3. Přidejte podporu do `abo_converter.py`
-4. Aktualizujte validátor `validate_abo.py`
+2. Vytvořte nový převodník podle vzoru `csv_to_abo_raiffeisen.py`
+3. Přidejte podporu do `main.py` s přímým importem
+4. Aktualizujte validátor `abo_validator.py`
+5. Využijte sdílené funkce z `utils/banking_utils.py`
 
 ### Testování / Testing
 
@@ -263,6 +281,19 @@ python3 abo_converter.py --validate test.kpc
 - [Raiffeisenbank ABO formát](https://www.rb.cz/firemni-klienti/platebni-styk)
 - [České bankovní kódy](https://www.cnb.cz/cs/platebni-styk/kodovniky/)
 
+## Kontribuování / Contributing
+
+Projekt je na GitHubu s nastavenými CI/CD workflows a šablonami pro issues a pull requesty.
+
+The project is on GitHub with CI/CD workflows and templates for issues and pull requests.
+
+### GitHub Features
+
+- **CI/CD**: Automatické testování napříč Python 3.8-3.11
+- **Dependabot**: Automatické aktualizace závislostí
+- **Templates**: Šablony pro bug reporty a feature requesty
+- **Security Policy**: Jasný proces hlášení bezpečnostních problémů
+
 ## Licence / License
 
 MIT License - viz LICENSE soubor
@@ -272,3 +303,7 @@ MIT License - viz LICENSE soubor
 Pro hlášení chyb a návrhy vytvořte issue v repositáři.
 
 For bug reports and suggestions, please create an issue in the repository.
+
+## Autor / Author
+
+Sebastian Hozak <hozaksebastian@gmail.com>
