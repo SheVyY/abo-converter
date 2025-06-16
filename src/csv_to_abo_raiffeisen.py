@@ -34,6 +34,7 @@ import os
 import re
 import sys
 from datetime import datetime
+from utils.banking_utils import validate_account_modulo11, convert_czech_to_ascii, format_account_number
 
 # Configuration constants
 OUTPUT_ENCODING = 'windows-1250'  # Required encoding for ABO files
@@ -58,56 +59,6 @@ class CSV_to_ABO_Raiffeisen:
         self.csv_data = []                    # Will store parsed CSV records
         self.creation_date = datetime.now()   # Used for file headers and dates
 
-    def validate_account_modulo11(self, account_str):
-        """
-        Validate Czech account number using Modulo 11 algorithm.
-
-        Czech account numbers use a specific checksum algorithm to validate
-        both the prefix (optional) and main account number parts.
-
-        Args:
-            account_str (str): Account number in format "prefix-account" or just "account"
-
-        Returns:
-            bool: True if account number is valid, False otherwise
-        """
-        # Remove bank code if present
-        if '/' in account_str:
-            account_str = account_str.split('/')[0]
-
-        # Remove dashes and spaces
-        account_clean = re.sub(r'[-\s]', '', account_str)
-
-        if not account_clean.isdigit():
-            return False
-
-        # Split into prefix and account number
-        if '-' in account_str:
-            parts = account_str.split('-')
-            prefix = parts[0] if len(parts) > 1 else ''
-            account = parts[-1]
-        else:
-            prefix = ''
-            account = account_clean
-
-        # Validate prefix (if exists)
-        if prefix:
-            prefix_clean = re.sub(r'[^0-9]', '', prefix)
-            if prefix_clean:
-                weights = [10, 5, 8, 4, 2, 1]
-                checksum = sum(int(digit) * weights[i % len(weights)] for i, digit in enumerate(prefix_clean.zfill(6)))
-                if checksum % 11 != 0:
-                    return False
-
-        # Validate account number
-        account_clean = re.sub(r'[^0-9]', '', account)
-        if len(account_clean) > 10:
-            return False
-
-        weights = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1]
-        checksum = sum(int(digit) * weights[i] for i, digit in enumerate(account_clean.zfill(10)))
-
-        return checksum % 11 == 0
 
     def format_account_number(self, account_str):
         """
@@ -169,14 +120,7 @@ class CSV_to_ABO_Raiffeisen:
         header = 'UHL1'
         header += self.creation_date.strftime('%d%m%y')
         # Convert to ASCII-safe characters and uppercase
-        safe_name = client_name.replace('Č', 'C').replace('č', 'c').replace('Ř', 'R').replace('ř', 'r')
-        safe_name = safe_name.replace('Š', 'S').replace('š', 's').replace('Ž', 'Z').replace('ž', 'z')
-        safe_name = safe_name.replace('Ý', 'Y').replace('ý', 'y').replace('Á', 'A').replace('á', 'a')
-        safe_name = safe_name.replace('É', 'E').replace('é', 'e').replace('Í', 'I').replace('í', 'i')
-        safe_name = safe_name.replace('Ó', 'O').replace('ó', 'o').replace('Ú', 'U').replace('ú', 'u')
-        safe_name = safe_name.replace('Ů', 'U').replace('ů', 'u').replace('Ě', 'E').replace('ě', 'e')
-        safe_name = safe_name.replace('Ď', 'D').replace('ď', 'd').replace('Ť', 'T').replace('ť', 't')
-        safe_name = safe_name.replace('Ň', 'N').replace('ň', 'n')
+        safe_name = convert_czech_to_ascii(client_name)
         header += safe_name[:20].ljust(20).upper()  # No lowercase allowed
         header += '1234567890'  # Client ID (10 chars)
         header += '001'         # File interval start
