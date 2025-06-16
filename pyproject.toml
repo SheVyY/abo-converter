@@ -1,0 +1,204 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abo-converter"
+version = "1.0.0"
+description = "Professional CSV to ABO converter for Czech banking systems"
+authors = [{name = "Sebastian Hozak", email = "hozaksebastian@gmail.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["abo", "banking", "csv", "raiffeisenbank", "fio", "czech"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://github.com/sebastianhozak/abo-converter"
+Repository = "https://github.com/sebastianhozak/abo-converter"
+Issues = "https://github.com/sebastianhozak/abo-converter/issues"
+
+[project.scripts]
+abo-converter = "abo_converter:main"
+
+[tool.ruff]
+# Set the maximum line length to 100 characters.
+line-length = 100
+
+# Assume Python 3.8+
+target-version = "py38"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv", 
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "web-app",
+]
+
+[tool.ruff.lint]
+# Enable specific rule sets
+select = [
+    # Pyflakes
+    "F",
+    # pycodestyle errors
+    "E",
+    # pycodestyle warnings  
+    "W",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-bandit (security)
+    "S",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-docstrings
+    "D",
+    # flake8-errmsg
+    "EM",
+    # flake8-implicit-str-concat
+    "ISC",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-return
+    "RET",
+    # flake8-simplify
+    "SIM",
+    # pylint
+    "PL",
+    # Ruff-specific rules
+    "RUF",
+]
+
+# Ignore specific rules that might be too strict for this project
+ignore = [
+    # Missing docstring in public module
+    "D100",
+    # Missing docstring in public class
+    "D101", 
+    # Missing docstring in public method
+    "D102",
+    # Missing docstring in public function
+    "D103",
+    # Missing docstring in public package
+    "D104",
+    # Missing docstring in magic method
+    "D105",
+    # Missing docstring in public nested class
+    "D106",
+    # Missing docstring in __init__
+    "D107",
+    # One-line docstring should fit on one line
+    "D200",
+    # No blank lines allowed before function docstring
+    "D201",
+    # No blank lines allowed after function docstring
+    "D202",
+    # 1 blank line required before class docstring
+    "D203",
+    # 1 blank line required after class docstring
+    "D204",
+    # 1 blank line required between summary line and description
+    "D205",
+    # Docstring should fit on one line
+    "D212",
+    # Multi-line docstring summary should start at the first line
+    "D213",
+    # Section name should end with a newline
+    "D214",
+    # First line should end with a period, question mark, or exclamation point
+    "D415",
+    # Use of `assert` detected (we use assert in tests)
+    "S101",
+    # Possible hardcoded password (false positives in tests)
+    "S105",
+    # Standard pseudo-random generators are not suitable for security/cryptographic purposes
+    "S311",
+    # Too many arguments to function call
+    "PLR0913",
+    # Too many local variables
+    "PLR0915",
+    # Line too long (handled by formatter)
+    "E501",
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use assert statements and have more relaxed rules
+"tests/*" = ["S101", "PLR0913", "PLR0915", "D"]
+# Allow print statements in main entry point
+"abo_converter.py" = ["T201"]
+# Allow print statements in CLI scripts
+"src/main.py" = ["T201"]
+
+[tool.ruff.lint.mccabe]
+# Set the maximum complexity level
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+# Use a single line for each import
+force-single-line = true
+# Group imports by type
+known-first-party = ["src"]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings
+convention = "google"
+
+[tool.pytest]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short", 
+    "--strict-markers",
+    "--disable-warnings"
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "slow: Slow running tests"
+]
