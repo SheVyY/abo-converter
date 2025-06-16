@@ -70,19 +70,19 @@ def validate_account_modulo11(account_str):
 def convert_czech_to_ascii(text):
     """
     Convert Czech characters to ASCII-safe equivalents for ABO format.
-    
+
     ABO format requires ASCII-only characters, so Czech diacritics must
     be converted to their base equivalents.
-    
+
     Args:
         text (str): Text with Czech characters
-        
+
     Returns:
         str: ASCII-safe text with Czech characters converted
     """
     if not text:
         return text
-        
+
     # Czech character conversion map
     conversions = {
         'Č': 'C', 'č': 'c', 'Ř': 'R', 'ř': 'r',
@@ -94,34 +94,34 @@ def convert_czech_to_ascii(text):
         'Ď': 'D', 'ď': 'd', 'Ť': 'T', 'ť': 't',
         'Ň': 'N', 'ň': 'n'
     }
-    
+
     # Apply conversions
     result = text
     for czech_char, ascii_char in conversions.items():
         result = result.replace(czech_char, ascii_char)
-    
+
     return result
 
 
 def format_account_number(account_str):
     """
     Format account number for ABO format.
-    
+
     Handles various input formats and ensures consistent output
     for the ABO file format.
-    
+
     Args:
         account_str (str): Account number in various formats
-        
+
     Returns:
         str: Formatted account number or empty string if invalid
     """
     if not account_str:
         return ''
-    
+
     # Clean input
     account_clean = str(account_str).strip()
-    
+
     # Handle different formats
     if '/' in account_clean:
         # Format: account/bank_code or prefix-account/bank_code
@@ -130,14 +130,14 @@ def format_account_number(account_str):
     else:
         account_part = account_clean
         bank_code = ''
-    
+
     # Remove spaces and normalize dashes
     account_part = account_part.replace(' ', '').replace('–', '-').replace('—', '-')
-    
+
     # Validate basic format
     if not re.match(r'^(\d{1,6}-)?(\d{1,10})$', account_part):
         return account_clean  # Return as-is if doesn't match expected pattern
-    
+
     # Split prefix and account
     if '-' in account_part:
         prefix, account = account_part.split('-', 1)
@@ -146,27 +146,27 @@ def format_account_number(account_str):
     else:
         # Format: AAAAAAAAAA (no prefix)
         formatted = account_part.zfill(10)
-    
+
     # Add bank code back if present
     if bank_code:
         formatted += f"/{bank_code}"
-    
+
     return formatted
 
 
 def format_amount_to_cents(amount_str):
     """
     Convert decimal amount to integer cents format for ABO.
-    
+
     Args:
         amount_str (str|float): Amount in decimal format (e.g., "1500.50")
-        
+
     Returns:
         int: Amount in cents (e.g., 150050)
     """
     if not amount_str:
         return 0
-        
+
     try:
         # Handle comma decimal separator
         amount_clean = str(amount_str).replace(',', '.')
@@ -179,23 +179,23 @@ def format_amount_to_cents(amount_str):
 def format_symbol(symbol_value, pad_length=10):
     """
     Format symbol (VS, SS) for ABO format.
-    
+
     Args:
         symbol_value (str): Symbol value
         pad_length (int): Length to pad to (default 10)
-        
+
     Returns:
         str: Formatted symbol or empty string if not valid
     """
     if not symbol_value:
         return ''
-        
+
     symbol_clean = str(symbol_value).strip()
     if symbol_clean == '0' or not symbol_clean:
         return ''
-        
+
     # Ensure numeric
     if not symbol_clean.isdigit():
         return ''
-        
+
     return symbol_clean.zfill(pad_length)

@@ -1,15 +1,18 @@
 # CLAUDE.md - Project Memory
 
 ## Project Overview
+
 ABO Converter Suite - Comprehensive tools for converting bank statements between various formats used by Czech banks.
 
 ## Project Goals
+
 1. **Reverse-engineer GPC to CSV process** - Create CSV to ABO converter for Raiffeisenbank
-2. **Support multiple bank formats** - Handle variations in ABO implementations 
+2. **Support multiple bank formats** - Handle variations in ABO implementations
 3. **Provide validation tools** - Ensure generated files meet banking standards
 4. **Maintain legacy compatibility** - Keep existing GPC converters functional
 
 ## Key Requirements
+
 - Python 3.x compatibility
 - Windows-1250 encoding for ABO files
 - Czech banking standards compliance (Modulo 11 validation)
@@ -19,7 +22,8 @@ ABO Converter Suite - Comprehensive tools for converting bank statements between
 ## Architecture Decisions
 
 ### File Structure
-```
+
+```text
 abo_converter/
 ├── abo_converter.py           # Main entry point
 ├── src/                       # Core source code
@@ -62,14 +66,14 @@ abo_converter/
 #### 3. ABO Validator (`abo_validator.py`)
 - **Purpose**: Validate ABO files from various Czech banks
 - **Supports**: Raiffeisenbank (5500), FIO Bank (2010), others
-- **Features**: 
+- **Features**:
   - Comprehensive validation with detailed error messages
   - File structure analysis with line-by-line reporting
   - Summary statistics (groups, payments)
 
 #### 4. Main Orchestrator (`main.py`)
 - **Purpose**: Unified interface for all conversion operations
-- **Features**: 
+- **Features**:
   - Direct imports (no os.system() calls - security improvement)
   - Command-line interface with argument parsing
   - File path resolution and error handling
@@ -86,27 +90,32 @@ abo_converter/
 ## Technical Implementation
 
 ### ABO Format Structure
-```
+
+```text
 UHL1[date][client_name][security_codes]     # File header (58 chars)
-1 1501 111111 5500                          # Account file header  
+1 1501 111111 5500                          # Account file header
 2 [account] [amount] [date]                 # Group header
 [payment_items]                             # Space-separated fields
 3 +                                         # Group terminator
 5 +                                         # File terminator
+
 ```
 
 ### Payment Item Format
-```
+
+```text
 [payee_account] [amount] [VS] [CS+bank] [SS] AV:[description]
 ```
 
 ### Data Transformations
+
 - **Amounts**: Decimal (1500.50) → Integer cents (150050)
 - **Dates**: DD.MM.YYYY → DDMMYY
 - **Accounts**: Various formats → Standardized with bank codes
 - **Encoding**: UTF-8 (input) → Windows-1250 (output)
 
 ## Testing Strategy
+
 - **Unit tests**: Individual converter functions
 - **Integration tests**: Full workflow (CSV→ABO→validation)
 - **Bank format tests**: Compare against working examples
@@ -115,16 +124,19 @@ UHL1[date][client_name][security_codes]     # File header (58 chars)
 ## Known Bank Variations
 
 ### Raiffeisenbank (5500)
+
 - Includes bank codes in account numbers
 - Variable-length amounts
 - Full payment descriptions in AV fields
 
-### FIO Bank (2010) 
+### FIO Bank (2010)
+
 - 12-digit zero-padded amounts
 - Simplified payment format
 - No bank codes in account numbers
 
 ## Dependencies
+
 - Python 3.x standard library only
 - No external packages required
 - Cross-platform compatibility (Windows, macOS, Linux)
@@ -132,6 +144,7 @@ UHL1[date][client_name][security_codes]     # File header (58 chars)
 ## Usage Patterns
 
 ### Common Operations
+
 ```bash
 # Convert CSV to Raiffeisenbank ABO
 python3 abo_converter.py --csv-to-abo payments.csv --output result.kpc --client "COMPANY"
@@ -144,18 +157,21 @@ python3 abo_converter.py --gpc-to-csv legacy.gpc --output modern.csv
 ```
 
 ### Expected CSV Format
+
 ```csv
 vlastní účet,účet protistrany,částka,VS,KS,SS,název účtu prostistrany,datum zaúčtování
 123456-1234567890,654321-0987654321/0300,1500.50,1234567890,0308,9876543210,COMPANY NAME,15.12.2024
 ```
 
 ## Error Handling
+
 - **File encoding issues**: Automatic character conversion
 - **Invalid account numbers**: Modulo 11 validation with warnings
 - **Missing data**: Sensible defaults and clear error messages
 - **Format violations**: Detailed validation reports
 
 ## Future Enhancements
+
 1. **Additional bank support**: ČSOB, Komerční banka, etc.
 2. **GUI interface**: User-friendly desktop application
 3. **API endpoints**: Web service for conversions
@@ -163,6 +179,7 @@ vlastní účet,účet protistrany,částka,VS,KS,SS,název účtu prostistrany,
 5. **Batch processing**: Handle multiple files
 
 ## Development Notes
+
 - All code includes comprehensive docstrings
 - Follows Python PEP 8 style guidelines
 - Uses snake_case naming convention
@@ -172,28 +189,33 @@ vlastní účet,účet protistrany,částka,VS,KS,SS,název účtu prostistrany,
 ## Recent Improvements (2025)
 
 ### Security Enhancements
+
 - **Eliminated os.system() vulnerability**: Replaced shell command execution with direct Python imports
 - **No command injection risk**: All converters now use proper function calls
 
 ### Code Quality
+
 - **Eliminated 200+ lines of duplicate code**: Extracted shared functions to `utils/banking_utils.py`
 - **Fixed broken validator**: Now provides detailed structure analysis and proper error reporting
 - **Cleaned up project structure**: Removed redundant files and misplaced components
 
 ### Repository Setup
+
 - **GitHub Actions CI/CD**: Automated testing across Python 3.8-3.11
 - **Dependabot integration**: Automated dependency updates
 - **Issue/PR templates**: Standardized contribution workflow
 - **Security policy**: Clear vulnerability reporting process
 
 ## Maintenance
+
 - **Code reviews**: Ensure banking compliance
 - **Format updates**: Track changes in bank specifications
 - **Security**: No sensitive data logging or storage
 - **Performance**: Optimize for large payment batches
 
 ## GitHub Repository
-- **Repository**: https://github.com/SheVyY/abo-converter (private)
+
+- **Repository**: <https://github.com/SheVyY/abo-converter> (private)
 - **CI/CD**: GitHub Actions for automated testing
 - **Dependencies**: Managed by Dependabot
 - **Contributions**: Via pull requests with templates

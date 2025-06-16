@@ -31,9 +31,10 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 
 # Import converter classes
-from csv_to_abo_raiffeisen import CSV_to_ABO_Raiffeisen
-from csv_to_abo_fio import CSV_to_ABO_FIO
 from abo_validator import validate_abo_file
+from csv_to_abo_fio import CSV_to_ABO_FIO
+from csv_to_abo_raiffeisen import CSV_to_ABO_Raiffeisen
+
 
 def show_help():
     """Show help for the ABO converter suite"""
@@ -106,9 +107,8 @@ def run_validate(input_file):
             for error in errors:
                 print(f"  - {error}")
             return 1
-        else:
-            print("File validation passed successfully")
-            return 0
+        print("File validation passed successfully")
+        return 0
     except Exception as e:
         print(f"Error validating file: {e}")
         return 1

@@ -31,10 +31,10 @@ CSV Format Expected:
 
 import csv
 import os
-import re
 import sys
 from datetime import datetime
-from utils.banking_utils import validate_account_modulo11, convert_czech_to_ascii, format_account_number
+
+from utils.banking_utils import convert_czech_to_ascii
 
 # Configuration constants
 OUTPUT_ENCODING = 'windows-1250'  # Required encoding for ABO files

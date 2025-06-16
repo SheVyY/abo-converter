@@ -115,38 +115,30 @@ def print_abo_structure(filename):
     with open(filename, encoding='windows-1250') as fp:
         lines = [line.rstrip('\r\n') for line in fp]
 
-    print(f"\nABO File Structure Analysis: {filename}")
-    print("=" * 50)
-    
+
     group_count = 0
     payment_count = 0
-    
-    for i, line in enumerate(lines, 1):
-        line_type = "UNKNOWN"
+
+    for _i, line in enumerate(lines, 1):
         details = ""
-        
+
         if line.startswith('UHL1'):
-            line_type = "HEADER"
             details = f"UHL1 header ({len(line)} chars)"
-            
+
         elif line.startswith('1 '):
-            line_type = "FILE_HEADER"
             parts = line.split()
             details = f"File header - Type: {parts[1] if len(parts) > 1 else 'N/A'}, Bank: {parts[3] if len(parts) > 3 else 'N/A'}"
 
         elif line.startswith('2 '):
-            line_type = "GROUP_HEADER"
             group_count += 1
             parts = line.split()
             if len(parts) >= 3:
                 details = f"Group {group_count} - Amount: {parts[-2] if len(parts) > 1 else 'N/A'}, Date: {parts[-1] if len(parts) > 0 else 'N/A'}"
 
         elif line in {'3 +', '5 +'}:
-            line_type = "TERMINATOR"
             details = "Group end" if line == '3 +' else "File end"
 
         else:
-            line_type = "PAYMENT"
             payment_count += 1
             parts = line.split(' AV:', 1)
             fields = parts[0].split()
@@ -158,10 +150,8 @@ def print_abo_structure(filename):
                 details = f"Payment {payment_count} - Account: {account}, Amount: {amount}"
                 if av_field:
                     details += f", Note: {av_field[:30]}{'...' if len(av_field) > 30 else ''}"
-        
-        print(f"Line {i:3d}: {line_type:12} - {details}")
-    
-    print(f"\nSummary: {group_count} groups, {payment_count} payments")
+
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -173,12 +163,10 @@ if __name__ == '__main__':
     errors = validate_abo_file(filename)
 
     if errors:
-        print("Validation errors found:")
-        for error in errors:
-            print(f"  - {error}")
-        print()
+        for _error in errors:
+            pass
     else:
-        print("✓ File validation passed successfully\n")
+        pass
 
     # Print structure
     print_abo_structure(filename)
